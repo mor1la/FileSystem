@@ -1,0 +1,16 @@
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra
+
+all: a.exe
+
+a.exe: main.o FileHandler.o
+	$(CXX) $(CXXFLAGS) main.o FileHandler.o -o a.exe
+
+main.o: main.cpp FileHandler.h FileException.h
+	$(CXX) $(CXXFLAGS) -c main.cpp
+
+FileHandler.o: FileHandler.cpp FileHandler.h FileException.h
+	$(CXX) $(CXXFLAGS) -c FileHandler.cpp
+
+clean:
+	rm -f *.o a.exe
