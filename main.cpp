@@ -4,7 +4,7 @@
 
 int main() {
     std::filesystem::path testFile = "test.txt";
-
+    std::filesystem::path deleteFile = "delete_file.txt";
 
     // Попытка открыть несуществующий файл в режиме чтения
     try {
@@ -69,9 +69,9 @@ int main() {
 
     // Файл был удален при открытии
     try {
-        FileHandler reader(testFile, FileHandler::Mode::Read);
+        FileHandler reader(deleteFile, FileHandler::Mode::Read);
 
-        if (std::filesystem::remove(testFile)) {
+        if (std::filesystem::remove(deleteFile)) {
             std::cout << "File deleted from filesystem after opening.\n";
         } else {
             std::cerr << "Failed to delete the file.\n";
