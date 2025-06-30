@@ -52,7 +52,7 @@ int main() {
     }
 
 
-    // Запись и чтение файла
+    // Чтение в файл
     try {
         FileHandler reader(testFile, FileHandler::Mode::Read);
         std::optional<std::string> line;
@@ -68,6 +68,7 @@ int main() {
         std::cerr << "Error during reading: " << e.what() << "\n";
     }
 
+    // Запись и чтение 
     try {
         FileHandler writerReader(readWriteFile, FileHandler::Mode::ReadWrite);
         writerReader.writeLine("ReadWrite mode\n");
