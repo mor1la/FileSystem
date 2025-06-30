@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <filesystem>
+#include <optional>
 
 class FileHandler
 {
@@ -21,7 +22,7 @@ public:
 
     void writeLine(const std::string& line);
 
-    std::string readLine();
+    std::optional<std::string> readLine();
 
 private:
     struct StreamDeleter

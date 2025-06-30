@@ -6,10 +6,10 @@ all: a.exe
 a.exe: main.o FileHandler.o
 	$(CXX) $(CXXFLAGS) main.o FileHandler.o -o a.exe
 
-main.o: main.cpp FileHandler.h FileException.h
+main.o: main.cpp FileHandler.h FileExceptions.h
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
-FileHandler.o: FileHandler.cpp FileHandler.h FileException.h
+FileHandler.o: FileHandler.cpp FileHandler.h FileExceptions.h Consts.h
 	$(CXX) $(CXXFLAGS) -c FileHandler.cpp
 
 clean:

@@ -1,26 +1,26 @@
 #include "FileHandler.h"
-#include "FileException.h"
+#include "FileExceptions.h"
 
 FileHandler::FileHandler (const std::filesystem::path& filePath, Mode mode) 
     : filePath(filePath), openMode(mode)
 {
-    std::ios_base::openmode openMode;
+    std::ios_base::openmode stdOpenMode;
     switch (mode) 
     {
         case Mode::Read:
-            openMode = std::ios::in;
+            stdOpenMode = std::ios::in;
             break;
         case Mode::Write:
-            openMode  = std::ios::out;
+            stdOpenMode  = std::ios::out;
             break;
         case Mode::ReadWrite:
-            openMode = std::ios::in | std::ios::out;
+            stdOpenMode = std::ios::in | std::ios::out;
             break;
     }
     
     stream = std::unique_ptr<std::fstream, StreamDeleter>(new std::fstream(
-        filePath, openMode), StreamDeleter());
-
+        filePath, stdOpenMode), StreamDeleter());
+    
     checkFileIsOpen();       
 }
 
@@ -35,38 +35,58 @@ void FileHandler::checkFileIsOpen()
 void FileHandler::checkMode(Mode expected) const
 {
     if (expected == Mode::Read && openMode == Mode::Write)
-        throw FileModeException("Write-only mode: cannot read.");
+        throw FileModeException(Consts::FILE_MODE_ERROR_WRITE_ONLY);
     if (expected == Mode::Write && openMode == Mode::Read)
-        throw FileModeException("Read-only mode: cannot write.");
+        throw FileModeException(Consts::FILE_MODE_ERROR_READ_ONLY);
 }
 
 void FileHandler::writeLine(const std::string& line)
 {
     checkMode(Mode::Write);
-    (*stream) << line << "\n";
-    if (!(*stream))
+    
+    (*stream) << line << '\n';
+
+    if (stream->fail())
     {
-        throw FileWriteException("Unable to write line to file.");
+        throw FileWriteException(Consts::FILE_WRITE_FAILBIT);
+    }
+
+    if (stream->bad())
+    {
+        throw FileWriteException(Consts::FILE_WRITE_BADBIT);
     }
 }
 
-std::string FileHandler::readLine()
+
+std::optional<std::string> FileHandler::readLine()
 {
     checkMode(Mode::Read);
-    
+
     std::string line;
-    if (!std::getline(*stream, line)) 
+
+    if (std::getline(*stream, line)) 
     {
-        if (stream->eof()) 
-        {
-            throw std::runtime_error("End of file reached");
-        } else 
-        {
-            throw std::runtime_error("Failed to read from file");
-        }
+        return line;
     }
-    return line;
+
+    if (stream->eof()) 
+    {
+        return std::nullopt; 
+    }
+
+    if (stream->fail()) 
+    {
+        throw FileReadException(Consts::FILE_READ_FAILBIT);
+    }
+
+    if (stream->bad()) 
+    {
+        throw FileReadException(Consts::FILE_READ_BADBIT);
+    }
+
+    return std::nullopt;
 }
+
 
 void FileHandler::StreamDeleter::operator()(std::fstream* stream) const 
 {
