@@ -67,29 +67,6 @@ int main() {
         std::cerr << "Error during reading: " << e.what() << "\n";
     }
 
-    // Файл был удален при открытии
-    try {
-        FileHandler reader(deleteFile, FileHandler::Mode::Read);
-
-        if (std::filesystem::remove(deleteFile)) {
-            std::cout << "File deleted from filesystem after opening.\n";
-        } else {
-            std::cerr << "Failed to delete the file.\n";
-        }
-
-        auto line = reader.readLine();
-        if (line) {
-            std::cout << "Read: " << *line << "\n";
-        } else {
-            std::cout << "End of file or no data.\n";
-        }
-
-    } catch (const FileReadException& e) {
-        std::cerr << "Error during reading after file deletion: " << e.what() << "\n";
-    } catch (const std::exception& e) {
-        std::cerr << "Unexpected error after file deletion: " << e.what() << "\n";
-    }
-
 
     return 0;
 }
