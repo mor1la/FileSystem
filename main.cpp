@@ -5,6 +5,7 @@
 int main() {
     std::filesystem::path testFile = "test.txt";
     std::filesystem::path deleteFile = "delete_file.txt";
+    std::filesystem::path readWriteFile = "read_write.txt";
 
     // Попытка открыть несуществующий файл в режиме чтения
     try {
@@ -51,7 +52,7 @@ int main() {
     }
 
 
-    // Чтение в файл
+    // Запись и чтение файла
     try {
         FileHandler reader(testFile, FileHandler::Mode::Read);
         std::optional<std::string> line;
@@ -67,6 +68,21 @@ int main() {
         std::cerr << "Error during reading: " << e.what() << "\n";
     }
 
-
+    try {
+        FileHandler writerReader(readWriteFile, FileHandler::Mode::ReadWrite);
+        writerReader.writeLine("ReadWrite mode\n");
+        std::cout << "Finished writing file in Mode::ReadWrite.\n";
+        auto line = writerReader.readLine();
+        std::cout << "Read: " << *line << "\n";
+        std::cout << "Finished reading file in Mode::ReadWrite.\n" ;
+    } catch (const FileModeException& e) {
+        std::cerr << "File mode error " << e.what() << "\n";
+    } catch (const FileWriteException& e) {
+        std::cerr << "Error during writing: " << e.what() << "\n";
+    } catch (const FileReadException& e) {
+        std::cerr << "Error during reading: " << e.what() << "\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Error during reading: " << e.what() << "\n";
+    }
     return 0;
 }
